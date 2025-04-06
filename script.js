@@ -1,5 +1,8 @@
 //Per evitare il cors da opera: opera --disable-web-security --disable-site-isolation-trials --user-data-dir="c:\insecurebrowserdata"
 
+let baseUrl = "http://192.168.1.39/UI"
+baseUrl += "/rabbits-main/"
+
 let nomiVariabili = [
                     "EnableLampioni",
                     "Lampioni",
@@ -15,12 +18,13 @@ let nomiVariabili = [
 async function rabbits(key, valore = null){
     key = "parcheggioArduino" + key
 
-    let url
+    let url = baseUrl
     if(valore === null){
-        url = `https://www.schoolmakerday.it/rabbits/get.php?key=${key}`
+        url += `get.php?key=${key}`
     }else{
-        url = `https://www.schoolmakerday.it/rabbits/set.php?key=${key}&value=${valore}`
+        url += `set.php?key=${key}&value=${valore}`
     }
+    console.log(url)
     
     let RispostaRabbits = await fetch(url); // ASPETTA la risposta
     let data = await RispostaRabbits.json(); // ASPETTA la conversione in JSON
@@ -41,7 +45,7 @@ async function rabbitsToggle(key){
 }
 
 async function rabbitsOttieniTutteLeKey(){
-    let url = `https://www.schoolmakerday.it/rabbits/getkeys.php?keys=[`
+    let url = baseUrl + `getkeys.php?keys=[`
     
     nomiVariabili.forEach(element => {
         url += '"parcheggioArduino' + element + '",'
