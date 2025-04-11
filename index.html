@@ -26,9 +26,9 @@
                         <img class="display" src="display7Segmenti/0.png">
                     </div>
 
-                    <div class="servoEntrata" onclick="rabbitsToggle('ServoEntrata')"></div>
-                    <div class="servoUscita" onclick="rabbitsToggle('ServoUscita')"></div>
-                    <div class="lampioni" onclick="rabbitsToggle('Lampioni')"></div>
+                    <div class="servoEntrata" id="entrata" onclick="rabbitsToggle('CSrvEnt')"></div>
+                    <div class="servoUscita" id="uscita" onclick="rabbitsToggle('CSrvUsc')"></div>
+                    <div class="lampioni" id="lampioni" onclick="rabbitsToggle('CLmp')"></div>
                 </div>
             </div>
         </div>
@@ -61,8 +61,14 @@
                 </ul>
             </div>
 
+            <!-- DEBUG
+            -->
             <button onclick="rabbitsDichiaraTutteLeKey()">Dichiara le keys</button>
             <button onclick="test()">Leggi le keys</button>
+
+            <button onclick="rabbitsToggle('ELmp')">Enable lampioni</button>
+            <button onclick="rabbitsToggle('ESrvEnt')">Enable Servo Entrata</button>            
+            <button onclick="rabbitsToggle('ESrvUsc')">Enable Servo Uscita</button>
         </footer>
     </div>
 

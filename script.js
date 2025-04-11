@@ -1,22 +1,43 @@
 //Per evitare il cors da opera: opera --disable-web-security --disable-site-isolation-trials --user-data-dir="c:\insecurebrowserdata"
 
-let baseUrl = "http://192.168.1.39/UI"
-baseUrl += "/rabbits-main/"
+//Cambia la variabile se vuoi usare il server rabbits pubblico
+let locale = true
 
+//Inserisci l'ip della macchina
+let ipLocale = "192.168.1.39"
+
+
+let baseUrl
+let prefissoVariabili = ""
+if (locale){
+    baseUrl = `http://${ipLocale}/UI/rabbits-main/`
+}else{
+    baseUrl = "https://www.schoolmakerday.it/rabbits/"
+    prefissoVariabili = "parcheggioArduino"
+}
+
+
+//Gli enable fanno in modo di accettare variazioni dei comandi dall'arduino
 let nomiVariabili = [
-                    "EnableLampioni",
-                    "Lampioni",
+                    "ELmp",     //Enable  Lampioni
+                    "CLmp",     //Comando Lampioni
+                    "SLmp",     //Stato   Lampioni
 
-                    "EnableServoEntrata",
-                    "ServoEntrata",
+                    "ESrvEnt",  //Enable  Servo Entrata
+                    "CSrvEnt",  //Comando Servo Entrata
+                    "SSrvEnt",  //Stato   Servo Entrata
 
-                    "EnableServoUscita",
-                    "ServoUscita"
+                    "ESrvUsc",  //Enable  Servo Uscita
+                    "CSrvUsc",  //Comando Servo Uscita
+                    "SSrvUsc",  //Stato   Servo Uscita
+
+                    "posti", //Numero posti disponibili
                     ]
 
 
+
 async function rabbits(key, valore = null){
-    key = "parcheggioArduino" + key
+    key = prefissoVariabili + key
 
     let url = baseUrl
     if(valore === null){
@@ -48,7 +69,7 @@ async function rabbitsOttieniTutteLeKey(){
     let url = baseUrl + `getkeys.php?keys=[`
     
     nomiVariabili.forEach(element => {
-        url += '"parcheggioArduino' + element + '",'
+        url += '"' + prefissoVariabili + element + '",'
     });
     url = url.slice(0, -1)
     url += "]"
@@ -57,6 +78,7 @@ async function rabbitsOttieniTutteLeKey(){
 
     let RispostaRabbits = await fetch(url); // ASPETTA la risposta
     let data = await RispostaRabbits.json(); // ASPETTA la conversione in JSON
+    console.log(data)
     return data
     }
 
@@ -69,3 +91,53 @@ async function rabbitsDichiaraTutteLeKey(){
 async function test(){
     rabbitsOttieniTutteLeKey().then(data => console.log(data))
 }
+
+async function sistemaUI(data){
+    document.querySelector(".display").setAttribute("src",`display7Segmenti/${data["data"]["posti"]["value"]}.png`);
+    
+    if(data["data"]["SSrvEnt"]["value"] == "true"){
+        document.querySelector("#entrata").setAttribute(
+        "style",
+            "background-color: rgba(141, 252, 97, 0.5)"
+        )
+    }else{
+        document.querySelector("#entrata").setAttribute(
+            "style",
+                "background-color: rgba(255, 146, 146, 0.5)"
+            )
+    }
+
+    if(data["data"]["SSrvUsc"]["value"] == "true"){
+        document.querySelector("#uscita").setAttribute(
+        "style",
+            "background-color: rgba(141, 252, 97, 0.5)"
+        )
+    }else{
+        document.querySelector("#uscita").setAttribute(
+            "style",
+                "background-color: rgba(255, 146, 146, 0.5)"
+            )
+    }
+
+    if(data["data"]["SLmp"]["value"] == "true"){
+        document.querySelector("#lampioni").setAttribute(
+        "style",
+            "background-color: rgba(141, 252, 97, 0.5)"
+        )
+    }else{
+        document.querySelector("#lampioni").setAttribute(
+            "style",
+                "background-color: rgba(255, 146, 146, 0.5)"
+            )
+    }
+
+}
+
+async function loop(){
+    rabbitsOttieniTutteLeKey().then(data => sistemaUI(data))
+    await new Promise(resolve => setTimeout(resolve, 100));
+    console.log("loop")
+    loop()
+}
+
+loop()
